@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import CanvasImage from "./Components/CanvasImage";
+import CanvasImages from "./Components/CanvasImage";
  
 import { useEffect, useRef, useState, Component } from "react";
 
@@ -12,10 +12,7 @@ class ponto{
   {
     this.x = px;
     this.y = py;
-  }
-
-
- 
+  } 
 }
 
 function App() {
@@ -77,22 +74,18 @@ function App() {
 
 
     ctxRef.current.moveTo(
-      e.nativeEvent.offsetX, 
-      e.nativeEvent.offsetY
+      e.nativeEvent.offsetX%pxSprite, 
+      e.nativeEvent.offsetY%pxSprite
     );
 
-    pAnterior = new ponto(e.nativeEvent.offsetX, 
-      e.nativeEvent.offsetY);
-
-     
- 
-    
+    pAnterior = new ponto(e.nativeEvent.offsetX%pxSprite, 
+      e.nativeEvent.offsetY%pxSprite);
     setIsDrawing(true);
    // document.getElementById('xy').value = pontAnterior.pontoY;
 
     ctxRef.current.lineTo(
-      e.nativeEvent.offsetX, 
-      e.nativeEvent.offsetY
+      e.nativeEvent.offsetX%pxSprite,
+      e.nativeEvent.offsetY%pxSprite
     );
 
      for(var i=0; i< contBrushes; i++)
@@ -111,12 +104,12 @@ function App() {
      ctxRef.current.stroke();
     }
     ctxRef.current.moveTo(
-      e.nativeEvent.offsetX, 
-      e.nativeEvent.offsetY
+      e.nativeEvent.offsetX%pxSprite, 
+      e.nativeEvent.offsetY%pxSprite
     );
 
     ctxRef.current.stroke();
-
+    copyCanvas();
   };
   const endDrawing = () => {
     ctxRef.current.closePath();
@@ -129,12 +122,10 @@ function App() {
     }
     var pontoAtual ;
     pontoAtual = new ponto(
-      e.nativeEvent.offsetX, 
-      e.nativeEvent.offsetY
+      e.nativeEvent.offsetX%pxSprite, 
+      e.nativeEvent.offsetY%pxSprite
     );
-    
 
-     
     if((pAnterior.x === -1 && pAnterior.y === -1) || (Math.abs(pAnterior.x-pontoAtual.x)>pxSprite/2)
     || (Math.abs(pAnterior.y-pontoAtual.y)>pxSprite/2))
     {
@@ -219,32 +210,24 @@ function App() {
     {
       lcanvas[i].getContext("2d").drawImage(canvas, 0,0, pxSprite, pxSprite);
     }
-
     
+
+    var canvasr = document.getElementById('IMAGEM2');
+     
+    var ctx = canvasr.getContext('2d');
+    ctx.clearRect(0, 0, canvasr.width, canvasr.height);  
+    var pattern = ctx.createPattern(lcanvas[0], 'repeat');
+    ctx.fillStyle = pattern;
  
+    ctx.rect(0, 0, canvasr.width, canvasr.height);
+    ctx.fillStyle = pattern;
+    ctx.fill();
   }
-  function initCanvas()
-  {
-    ctxRef.current.beginPath();
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.globalAlpha = lineOpacity;
-    ctx.strokeStyle = lineColor;
-    ctx.lineWidth = lineWidth;
-    ctxRef.current = ctx;
-    var tam = document.getElementById('v_tamanho');
-    var qnt = document.getElementById('v_quantidade');
-    var cor = document.getElementById('v_cor');
-    setLineColor(cor.value);
-    setLineWidth(tam.value);
-    setBushCount(qnt.value);
-  }
+  
   
   return (
     <div className="App">
-      <h1 id="teste">SPRITEIRO</h1>
+      <h1 id="teste" className="teste">SPRITEIRO</h1>
       <div className="draw-area" >
        <div className='Menu'>
        <label id="sprite">sprite: 1000px</label>
@@ -282,41 +265,28 @@ function App() {
         <button onClick={saveimage}> save</button>
         </div >
         <div>
-        <CanvasImage
-          startDrawing={startDrawing}
-          endDrawing={endDrawing}
-          draw={draw}
-          ref={canvasRef}
-          pxSprite={pxSprite}
-        />   
-        <canvas id = "IMAGEM"
-          className="area"
-          onMouseDown={startDrawing}
-          onMouseUp={endDrawing}
-          onMouseMove={draw}
-          ref={canvasRef}
-          width={pxSprite}
-          height={pxSprite}
-        />   
-        <br></br>
-        <canvas id = "IMAGEM"
-          className="area"
-          onMouseDown={startDrawing}
-          onMouseUp={endDrawing}
-          onMouseMove={draw}
-          ref={canvasRef}
-          width={pxSprite}
-          height={pxSprite}
-        />  
-        <canvas id = "IMAGEM"
-          className="area"
-          onMouseDown={startDrawing}
-          onMouseUp={endDrawing}
-          onMouseMove={draw}
-          ref={canvasRef}
-          width={pxSprite}
-          height={pxSprite}
-        />  
+        <canvas id = "IMAGEM2"
+            className="area2"
+            onMouseDown={startDrawing}
+            onMouseUp={endDrawing}
+            onMouseOut={endDrawing}
+            onMouseMove={draw}
+            ref={canvasRef}
+            width={pxSprite*4}
+            height={pxSprite*4}
+            color='white'
+          /> 
+          <canvas id = "IMAGEM"
+            className="area"
+            onMouseDown={startDrawing}
+            onMouseUp={endDrawing}
+            onMouseOut={endDrawing}
+            onMouseMove={draw}
+            ref={canvasRef}
+            width={pxSprite}
+            height={pxSprite}
+          />   
+         
         </div>   
       </div>
     </div>
